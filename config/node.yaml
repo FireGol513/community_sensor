@@ -1,0 +1,34 @@
+# Basic node identity
+node_id: "Node7"
+timezone: "America/Toronto"
+
+# Sampling interval in seconds
+tick_seconds: 1
+
+# Sensor configuration
+sensors:
+  pms1:
+    enabled: true
+    port: "/dev/ttyS0"     # PMS #1 on GPIO14/15 → /dev/ttyS0
+  pms2:
+    enabled: true
+    port: "/dev/ttyAMA0"   # PMS #2 on GPIO0/1 → /dev/ttyAMA0
+  bme:
+    enabled: true
+    i2c_bus: 1
+    address: 0x76          # BME688 at 0x76 (SDO tied low)
+  so2:
+    enabled: false         # leave off until SO2 behaves
+    i2c_bus: 1
+    address: 0x75
+
+# 5-minute chunk settings
+chunks:
+  window_seconds: 300      # 5 minutes
+  use_utc_filenames: true  # filenames in UTC
+
+# Upload behavior (we'll wire this up later)
+upload:
+  enabled: false
+  method: "http"           # placeholder
+  min_age_minutes: 10      # don't touch very recent files
