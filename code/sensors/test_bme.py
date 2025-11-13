@@ -6,7 +6,7 @@ Simple BME688 test script.
 Reads once from the BME on I2C bus 1, address 0x76, and prints the result.
 """
 
-from sensors.bme import read_bme
+from .bme import read_bme   # <-- note the dot: relative import
 
 
 def main():
