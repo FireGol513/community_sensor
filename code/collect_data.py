@@ -20,7 +20,7 @@ import yaml  # pip install pyyaml
 
 from sensors.pms import PMSReader
 from sensors.bme import read_bme
-from sensors.so2 import read_so2
+from sensors.so2 import init_so2, read_so2
 from utils.timekeeping import (
     now_utc,
     utc_to_local,
@@ -67,23 +67,42 @@ def main() -> None:
     pms1_reader: Optional[PMSReader] = None
     pms2_reader: Optional[PMSReader] = None
 
+    # PMS1
     if s_cfg.get("pms1", {}).get("enabled", False):
         p1_port = s_cfg["pms1"]["port"]
         pms1_reader = PMSReader(p1_port)
         log.info(f"PMS1 enabled on {p1_port}")
 
+    # PMS2
     if s_cfg.get("pms2", {}).get("enabled", False):
         p2_port = s_cfg["pms2"]["port"]
         pms2_reader = PMSReader(p2_port)
         log.info(f"PMS2 enabled on {p2_port}")
 
+    # BME688
     bme_enabled = s_cfg.get("bme", {}).get("enabled", False)
     bme_bus = s_cfg.get("bme", {}).get("i2c_bus", 1)
     bme_addr = s_cfg.get("bme", {}).get("address", 0x76)
 
+    # SO2
     so2_enabled = s_cfg.get("so2", {}).get("enabled", False)
     so2_bus = s_cfg.get("so2", {}).get("i2c_bus", 1)
-    so2_addr = s_cfg.get("so2", {}).get("address", 0x75)
+    so2_addr_raw = s_cfg.get("so2", {}).get("address", 0x74)
+
+    # Normalise SO2 address (can be "0x74" or 116)
+    try:
+        so2_addr = int(str(so2_addr_raw), 0)
+    except Exception:
+        so2_addr = 0x74
+
+    # Initialise SO2 once if enabled
+    if so2_enabled:
+        try:
+            init_so2(bus=so2_bus, address=so2_addr)
+            log.info(f"SO2 enabled on I2C bus {so2_bus}, addr 0x{so2_addr:02X}")
+        except Exception as e:
+            log.warning(f"Disabling SO2 after init failure: {e}")
+            so2_enabled = False
 
     # New: daily writer instead of 5-minute chunk manager
     dw = DailyWriter(root_dir=root, node_id=node_id, tz_name=tz_name)
@@ -144,14 +163,19 @@ def main() -> None:
                     row["pms2_status"] = f"error:{e}"
                     logging.warning(f"PMS2 read error: {e}")
 
-            # SO2 (still stubbed)
+            # SO2
             if so2_enabled:
                 try:
-                    v = read_so2(bus=so2_bus, address=so2_addr)
+                    v = read_so2()
                     if v is not None:
-                        row["so2_ppm"] = v
+                        # v is a dict from sensors.so2.read_so2()
+                        row["so2_raw"] = v.get("so2_raw")
+                        row["so2_byte0"] = v.get("so2_byte0")
+                        row["so2_byte1"] = v.get("so2_byte1")
+                        row["so2_error"] = v.get("so2_error")
                 except Exception as e:
                     logging.warning(f"SO2 read error: {e}")
+                    row["so2_error"] = f"exception:{e}"
 
             # Write one row into today's daily CSV
             dw.write_sample(row=row, sample_time_utc=t_utc)

@@ -18,9 +18,9 @@ sensors:
     i2c_bus: 1
     address: 0x76          # BME688 at 0x76 (SDO tied low)
   so2:
-    enabled: false         # leave off until SO2 behaves
+    enabled: true         # leave off until SO2 behaves
     i2c_bus: 1
-    address: 0x75
+    address: 0x74
 
 # 5-minute chunk settings
 chunks:
