@@ -91,8 +91,7 @@ def main() -> None:
         try:
             opc_reader = OPCN3(bus=opc_bus, device=opc_device) #spi_max_speed=opc_speed 
             log.info(
-                f"OPC-N3 enabled on SPI bus {opc_bus}, device {opc_device}, "
-                f"max_speed {opc_speed}"
+                f"OPC-N3 enabled on SPI bus {opc_bus}, device {opc_device}"
             )
         except Exception as e:
             log.warning(f"Disabling OPC-N3 after init failure: {e}")
