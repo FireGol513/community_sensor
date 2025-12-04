@@ -89,7 +89,7 @@ def main() -> None:
     if opc_enabled:
         try:
             # Adjust args if your OPCN3 __init__ is different
-            opc_reader = OPCN3(port=opc_port, baudrate=opc_baud)
+            opc_reader = OPCN3(opc_port, opc_baud)
             log.info(f"OPC-N3 enabled on {opc_port} @ {opc_baud} baud")
         except Exception as e:
             log.warning(f"Disabling OPC-N3 after init failure: {e}")
