@@ -21,7 +21,7 @@ import yaml  # pip install pyyaml
 from sensors.pms import PMSReader
 from sensors.bme import read_bme
 from sensors.so2 import init_so2, read_so2
-from sensors.opc_n3 import OPCN3Reader  # <-- NEW
+from sensors.opc_n3 import OPCN3   # <-- OPC class here
 from utils.timekeeping import (
     now_utc,
     utc_to_local,
@@ -67,7 +67,7 @@ def main() -> None:
 
     pms1_reader: Optional[PMSReader] = None
     pms2_reader: Optional[PMSReader] = None
-    opc_reader: Optional[OPCN3Reader] = None  # <-- NEW
+    opc_reader: Optional[OPCN3] = None   # <-- OPC handle
 
     # PMS1
     if s_cfg.get("pms1", {}).get("enabled", False):
@@ -88,7 +88,8 @@ def main() -> None:
 
     if opc_enabled:
         try:
-            opc_reader = OPCN3Reader(port=opc_port, baudrate=opc_baud)
+            # Adjust args if your OPCN3 __init__ is different
+            opc_reader = OPCN3(port=opc_port, baudrate=opc_baud)
             log.info(f"OPC-N3 enabled on {opc_port} @ {opc_baud} baud")
         except Exception as e:
             log.warning(f"Disabling OPC-N3 after init failure: {e}")
@@ -181,7 +182,7 @@ def main() -> None:
             # OPC-N3
             if opc_reader is not None:
                 try:
-                    o = opc_reader.read()  # adjust method name if different
+                    o = opc_reader.read()   # adjust if your method name differs
                     if o:
                         # Assumes dict with pm1/pm25/pm10; tweak keys if needed
                         row["pm1_atm_opc"] = o.get("pm1")
@@ -222,7 +223,7 @@ def main() -> None:
             pms1_reader.close()
         if pms2_reader is not None:
             pms2_reader.close()
-        if opc_reader is not None:   # <-- NEW
+        if opc_reader is not None:
             opc_reader.close()
         log.info("Shutdown complete")
 
