@@ -22,7 +22,7 @@ from sensors.bme import read_bme
 from sensors.so2 import init_so2, read_so2
 from sensors.opc_n3 import OPCN3
 
-from utils.timekeeping import now_utc, isoformat_utc_z, isoformat_local
+from utils.timekeeping import now_utc, utc_to_local, isoformat_utc_z, isoformat_local
 from daily_writer import DailyWriter
 
 
@@ -136,10 +136,11 @@ def main() -> None:
     try:
         while True:
             t_utc = now_utc()
+	    t_local = utc_to_local(t_utc, tz_name)
 
             row: Dict[str, Any] = {
                 "timestamp_utc": isoformat_utc_z(t_utc),
-                "timestamp_local": isoformat_local(t_utc, tz_name),  # NOTE: timekeeping helper should accept tz_name
+                "timestamp_local": isoformat_local(t_local),  # NOTE: timekeeping helper should accept tz_name
                 "node_id": node_id,
             }
 

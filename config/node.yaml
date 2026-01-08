@@ -5,7 +5,7 @@ node_id: "Node7"
 timezone: "America/Toronto"
 
 # Sampling interval in seconds
-tick_seconds: 1
+tick_seconds: 2
 
 # Sensor configuration
 sensors:

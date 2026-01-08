@@ -12,7 +12,7 @@ from typing import Optional, Dict
 
 
 class PMSReader:
-    def __init__(self, port: str, baudrate: int = 9600, timeout: float = 2.0):
+    def __init__(self, port: str, baudrate: int = 9600, timeout: float = 0.5):
         self.port = port
         self.baudrate = baudrate
         self.timeout = timeout
@@ -67,12 +67,27 @@ class PMSReader:
             "pm10": vals[5],
         }
 
-    def read(self) -> Optional[Dict[str, int]]:
-        try:
-            return self._read_frame()
-        except Exception as e:
-            print(f"[PMSReader] Error reading from {self.port}: {e}")
-            return None
+    import time
+
+    def read(self, window_seconds: float = 0.4) -> Optional[Dict[str, int]]:
+        """
+        Try to read a PMS frame for up to window_seconds.
+        Returns the first valid frame, or None if none arrive.
+        """
+        deadline = time.monotonic() + window_seconds
+
+        while time.monotonic() < deadline:
+            try:
+                frame = self._read_frame()
+                if frame is not None:
+                    return frame
+            except Exception:
+                pass
+    
+            # short pause so we don't spin the CPU
+            time.sleep(0.01)
+
+        return None
 
     def __enter__(self):
         self.open()

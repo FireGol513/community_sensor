@@ -31,33 +31,15 @@ COLUMNS = [
     "bme_status",          # optional but helpful
 
     # --- PMS1 ---
-    "pm1_cf1_pms1",
-    "pm25_cf1_pms1",
-    "pm10_cf1_pms1",
     "pm1_atm_pms1",
     "pm25_atm_pms1",
     "pm10_atm_pms1",
-    "n_0_3_pms1",
-    "n_0_5_pms1",
-    "n_1_0_pms1",
-    "n_2_5_pms1",
-    "n_5_0_pms1",
-    "n_10_pms1",
     "pms1_status",
 
     # --- PMS2 ---
-    "pm1_cf1_pms2",
-    "pm25_cf1_pms2",
-    "pm10_cf1_pms2",
     "pm1_atm_pms2",
     "pm25_atm_pms2",
     "pm10_atm_pms2",
-    "n_0_3_pms2",
-    "n_0_5_pms2",
-    "n_1_0_pms2",
-    "n_2_5_pms2",
-    "n_5_0_pms2",
-    "n_10_pms2",
     "pms2_status",
 
     # --- OPC-N3 ---
