@@ -1,20 +1,20 @@
 ÉMIS SENSOR NODE – RASPBERRY PI ZERO 2 W
 
-This repository contains the software used to operate an ÉMIS environmental
+This repository contains the software used to operate an ÉMIS particulate matter and SO2
 monitoring node. The system is designed to run continuously on a Raspberry Pi
 Zero 2 W and record air-quality measurements to daily CSV files.
 
 The node is modular, resilient to sensor failure, and intended for long-term,
 unattended deployment in field or community monitoring settings.
 
-WHAT THIS NODE DOES
+WHAT THIS SENSOR DOES
 
-At a fixed sampling interval (e.g., every 2 seconds), the node:
+At a fixed sampling interval (every 2 seconds), the node:
 	1.	Reads data from enabled sensors:
 	•	Two PMS5003 particulate sensors (PM1, PM2.5, PM10)
 	•	One BME688 (temperature, relative humidity, pressure, VOC resistance)
 	•	One DFRobot Gravity SO2 sensor (I2C)
-	2.	Computes PMS sensor agreement diagnostics (PurpleAir-style logic)
+	2.	Computes PMS sensor agreement diagnostics
 	3.	Writes one row per sample to a rolling daily CSV file
 	4.	Automatically creates a new CSV file at local midnight
 	5.	Logs runtime activity and errors to a log file
